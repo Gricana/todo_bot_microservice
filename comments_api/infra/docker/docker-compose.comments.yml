@@ -29,7 +29,7 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - comments_data:/var/lib/postgresql/data
       - ../db/init.sh:/docker-entrypoint-initdb.d/init.sh
     ports:
       - "5434:5432"
@@ -48,5 +48,5 @@ services:
       - todo_network
 
 volumes:
-  postgres_data:
+  comments_data:
   redis_data:
