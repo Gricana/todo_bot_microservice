@@ -54,7 +54,7 @@ tasks_dialog = Dialog(
             Const("💬 Посмотреть комментарии"),
             id="view_comments",
             on_click=lambda c, b, d: d.start(
-                comments.CommentStates.LIST, {"task_id": d.start_data["task_id"]}
+                comments.CommentStates.LIST, {"task_id": d.dialog_data["api_task"]["id"]}
             ),
         ),
         Button(
