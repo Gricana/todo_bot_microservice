@@ -1,0 +1,64 @@
+networks:
+  todo_network:
+    driver: bridge
+
+services:
+  tasksapi:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile
+    entrypoint: infra/api/entrypoint.sh
+    volumes:
+      - ../..:/todo_api
+      - ../db/wait-for-it.sh:/todo_api/infra/db/wait-for-it.sh
+      - ../api/supervisord.conf:/etc/supervisord.conf
+    ports:
+      - "8080:8080"
+    depends_on:
+      - tasks_db
+      - tasks_redis
+    env_file:
+      - ../api/tasks_api.env
+    networks:
+      - todo_network
+
+  tasks_db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../db/init.sh:/docker-entrypoint-initdb.d/init.sh
+    ports:
+      - "5433:5432"
+    env_file:
+      - ../db/db.env
+    networks:
+      - todo_network
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ../nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ../../static:/static
+    ports:
+      - "80:80"
+    depends_on:
+      - tasksapi
+    networks:
+      - todo_network
+
+  tasks_redis:
+    image: redis:alpine
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - todo_network
+
+volumes:
+  postgres_data:
+  redis_data:
