@@ -1,0 +1,33 @@
+networks:
+  todo_network:
+    driver: bridge
+
+
+services:
+  bot:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile
+    entrypoint: supervisord -c /etc/supervisord.conf
+    restart: always
+    env_file:
+      - ../bot/bot.env
+    volumes:
+      - ../..:/bot
+      - ../bot/supervisord.conf:/etc/supervisord.conf
+    depends_on:
+      - bot_redis
+    networks:
+      - todo_network
+
+  bot_redis:
+    image: redis:alpine
+    ports:
+      - "6382:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - todo_network
+
+volumes:
+  redis_data:
