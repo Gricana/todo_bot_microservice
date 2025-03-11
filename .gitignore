@@ -1,0 +1,6 @@
+*.log
+*.pid
+logs/*
+/static/
+tasks/migrations/
+users/migrations/
