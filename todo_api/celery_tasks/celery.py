@@ -19,6 +19,6 @@ app.autodiscover_tasks(['celery_tasks'])
 app.conf.beat_schedule = {
     "check_due_task_notifications": {
         "task": "celery_tasks.notifications.check_due_tasks",
-        "schedule": crontab(hour="11"),
+        "schedule": crontab(hour="12"),
     },
 }
