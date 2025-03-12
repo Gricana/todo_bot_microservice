@@ -33,6 +33,7 @@ async def get_comments_by_task(
     task_id: str,
     db: AsyncSession = Depends(get_db),
     redis=Depends(get_redis_client),
+    is_owner: bool = Depends(check_task_ownership),
 ):
     """
     Receives all the comments for the task.
@@ -47,6 +48,7 @@ async def delete_comment(
     comment_id: int,
     db: AsyncSession = Depends(get_db),
     redis=Depends(get_redis_client),
+    is_owner: bool = Depends(check_task_ownership),
 ):
     """
     Removes a comment for the task.
@@ -62,6 +64,7 @@ async def delete_comments_by_task(
     task_id: str,
     db: AsyncSession = Depends(get_db),
     redis=Depends(get_redis_client),
+    is_owner: bool = Depends(check_task_ownership),
 ):
     """
     Removes all comments for the task.
@@ -79,6 +82,7 @@ async def update_comment(
     comment: CommentUpdate,
     db: AsyncSession = Depends(get_db),
     redis=Depends(get_redis_client),
+    is_owner: bool = Depends(check_task_ownership),
 ):
     """
     Updates a comment for the task.
