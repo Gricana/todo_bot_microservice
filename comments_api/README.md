@@ -56,6 +56,16 @@
 
    Это поднимет сам микросервис, БД PostgreSQL и кеш Redis.
 
+   ### Важные замечания! ⚠️
+- Дайте разрешение всем bash-скриптам на выполнение в директориях [api](https://github.com/Gricana/todo_bot_microservice/tree/main/comments_api/infra/api) 
+   и [db](https://github.com/Gricana/todo_bot_microservice/tree/main/comments_api/infra/db).
+  
+  Это можно сделать **из корневой директории проекта** с помощью команды:
+
+  ```bash
+  chmod +x comments_api/infra/api/*.sh && chmod +x comments_api/infra/db/*.sh
+  ```
+
 ## Трудности и их решения
 
 1. **Проверка принадлежности задачи пользователю / авторизация**
