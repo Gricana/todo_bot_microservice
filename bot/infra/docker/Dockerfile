@@ -20,6 +20,8 @@ RUN poetry config virtualenvs.create false &&  \
 FROM python:3.13-slim
 
 RUN useradd --no-create-home appuser
+USER appuser
+
 WORKDIR /bot
 
 COPY --from=builder /usr/local/lib/python3.13 /usr/local/lib/python3.13
