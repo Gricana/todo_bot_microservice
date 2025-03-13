@@ -2,7 +2,7 @@
 
 ./infra/db/wait-for-it.sh db:5432 -- echo "Database is up"
 
-python manage.py makemigrations tasks users --noinput
+python manage.py makemigrations --noinput
 python manage.py migrate --noinput
 python manage.py collectstatic --noinput
 
