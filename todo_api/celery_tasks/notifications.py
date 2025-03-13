@@ -18,7 +18,7 @@ def check_due_tasks():
     Checks the tasks with the next term of execution and plans notifications.
     """
     msk_tz = pytz.timezone('Europe/Moscow')
-    now = timezone.now()
+    now = timezone.now().astimezone(pytz.timezone(settings.TIME_ZONE))
     due_tasks = Task.objects.filter(status=Task.Status.TODO, due_date__date=now.date())
     for task in due_tasks:
         task_time = task.due_date.astimezone(msk_tz)
