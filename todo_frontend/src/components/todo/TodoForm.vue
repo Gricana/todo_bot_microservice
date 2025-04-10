@@ -1,16 +1,20 @@
 <template>
   <div class="todo-form">
+    <!-- Заголовок формы: редактирование или создание -->
     <h1>{{ isEditMode ? 'Редактировать задачу' : 'Создать новую задачу' }}</h1>
 
     <form @submit.prevent="handleSubmit">
+      <!-- Поле: Название задачи -->
       <FormGroup id="title" label="Название задачи:" :error="getErrorMessage('title')">
         <input id="title" v-model="form.title" type="text" required />
       </FormGroup>
 
+      <!-- Поле: Описание -->
       <FormGroup id="description" label="Описание задачи:">
-        <textarea id="description" v-model="form.description" required />
+        <textarea id="description" v-model="form.description" />
       </FormGroup>
 
+      <!-- Поле: Статус задачи -->
       <FormGroup id="status" label="Статус:">
         <select id="status" v-model="form.status" required>
           <option value="TODO">Сделать</option>
@@ -19,6 +23,7 @@
         </select>
       </FormGroup>
 
+      <!-- Поле: Категории -->
       <FormGroup id="categories" label="Категории (через запятую):" :error="getErrorMessage('categories')">
         <input
             id="categories"
@@ -28,6 +33,7 @@
         />
       </FormGroup>
 
+      <!-- Поле: Дата и время выполнения -->
       <FormGroup id="dueDate" label="Дата и время выполнения:" :error="getErrorMessage('due_date')">
         <input
             id="dueDate"
@@ -36,7 +42,10 @@
         />
       </FormGroup>
 
-      <button type="submit" class="submit-btn">{{ isEditMode ? 'Сохранить' : 'Создать' }}</button>
+      <!-- Кнопка отправки -->
+      <button type="submit" class="submit-btn">
+        {{ isEditMode ? 'Сохранить' : 'Создать' }}
+      </button>
     </form>
   </div>
 </template>
@@ -49,6 +58,9 @@ import todoApi from "@/services/api.js";
 import { DateTime } from 'luxon';
 import FormGroup from '@/components/todo/FormGroup.vue';
 
+/**
+ * Преобразует локальную дату в ISO с учетом временной зоны
+ */
 function convertToZonedISO(localDateTime, zone = 'America/Adak') {
   if (!localDateTime) return null;
   return DateTime.fromISO(localDateTime, { zone: 'local' })
@@ -74,11 +86,11 @@ export default {
       dueDate: '',
     });
 
-    // При редактировании задачи — загружаем данные
+    // При монтировании — если режим редактирования, загружаем задачу
     onMounted(async () => {
       if (isEditMode) {
         try {
-          const { data } = await todoApi.get(`/api/tasks/${route.params.id}`); // 🛠️ здесь была ошибка — пропущены кавычки
+          const { data } = await todoApi.get(`/api/tasks/${route.params.id}`);
           form.title = data.title;
           form.description = data.description;
           form.status = data.status;
@@ -92,29 +104,37 @@ export default {
       }
     });
 
+    /**
+     * Возвращает сообщение об ошибке поля, если оно есть
+     */
     const getErrorMessage = (field) => {
       const err = formErrors[field];
       return Array.isArray(err) ? err.join(', ') : err;
     };
 
+    /**
+     * Отправка формы: создание или обновление задачи
+     */
     const handleSubmit = async () => {
       try {
-        // очищаем старые ошибки
         Object.keys(formErrors).forEach(key => delete formErrors[key]);
 
         const payload = { ...form };
 
+        // Преобразуем строку категорий в массив
         if (payload.categories?.trim()) {
           payload.categories = payload.categories.split(',').map(s => s.trim());
         } else {
           delete payload.categories;
         }
 
+        // Преобразуем дату
         if (payload.dueDate) {
           payload.due_date = convertToZonedISO(payload.dueDate, 'America/Adak');
           delete payload.dueDate;
         }
 
+        // Отправка запроса
         if (isEditMode) {
           await store.updateTodo(route.params.id, payload);
         } else {
@@ -122,7 +142,6 @@ export default {
         }
 
         await router.push('/');
-
       } catch (error) {
         if (error.response?.data && typeof error.response.data === 'object') {
           Object.assign(formErrors, error.response.data);
