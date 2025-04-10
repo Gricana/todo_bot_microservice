@@ -1,9 +1,14 @@
 import { createRouter, createWebHistory } from "vue-router";
+
 import TodoList from "@/components/todo/TodoList.vue";
 import TodoForm from "@/components/todo/TodoForm.vue";
 import AuthView from "@/components/auth/AuthView.vue";
+
 import { useAuthStore } from "@/store/auth";
 
+/**
+ * Определение маршрутов приложения.
+ */
 const routes = [
     {
         path: '/',
@@ -21,7 +26,7 @@ const routes = [
         path: '/edit/:id',
         name: 'EditTodo',
         component: TodoForm,
-        props: true,
+        props: true, // Пробрасываем :id как пропс в компонент
         meta: { requiresAuth: true },
     },
     {
@@ -32,11 +37,19 @@ const routes = [
     },
 ];
 
+
 const router = createRouter({
     history: createWebHistory(),
     routes,
 });
 
+/**
+ * Глобальный navigation guard.
+ * Выполняется перед каждым переходом.
+ * Проверяет:
+ * - если маршрут требует авторизации и пользователь не вошёл — перенаправляет на login
+ * - если маршрут только для гостей, но пользователь уже авторизован — отправляет на главную
+ */
 router.beforeEach((to, from, next) => {
     const auth = useAuthStore();
 
