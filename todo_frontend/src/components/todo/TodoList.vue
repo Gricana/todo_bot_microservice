@@ -13,7 +13,7 @@
             @click="toggleShowCompleted"
             :class="['toggle-btn', showCompleted ? 'active' : 'inactive']"
         >
-          {{ showCompleted ? 'Скрыть выполненные' : 'Показать выполненные' }}
+          {{ showCompleted ? 'Скрыть' : 'Показать' }} выполненные
         </button>
 
         <!-- Кнопка перехода к созданию новой задачи -->
@@ -29,6 +29,7 @@
           <option value="title">Название</option>
           <option value="due_date">Дата</option>
         </select>
+
         <!-- Смена направления сортировки -->
         <button @click="toggleSortDirection" class="toggle-btn">
           {{ sortDirection === 'asc' ? 'По возрастанию ↑' : 'По убыванию ↓' }}
@@ -67,7 +68,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useTodoStore } from '@/store/tasks.js';
 import { storeToRefs } from 'pinia';
@@ -85,10 +86,8 @@ export default {
     const router = useRouter();
     const store = useTodoStore();
     const { todos, loading, error } = storeToRefs(store);
+    const selectedTodo = ref(null);
 
-    const selectedTodo = ref(null); // Задача для модального окна
-
-    // Используем кастомный composable для сортировки и фильтрации
     const {
       sortedTodos,
       sortField,
@@ -96,47 +95,42 @@ export default {
       showCompleted,
       toggleShowCompleted,
       toggleSortDirection,
+      setSortField,
     } = useSortedTodos(todos);
 
-    // Загрузка задач при монтировании
+    // Сохраняем изменения в сортировке при выборе поля
+    watch(sortField, (newValue) => {
+      setSortField(newValue);
+    });
+
+    // Сохраняем изменения направления сортировки
+    watch(sortDirection, (newValue) => {
+      localStorage.setItem('sortDirection', newValue);
+    });
+
     onMounted(() => {
       store.fetchTodos();
     });
 
-    /**
-     * Удаляет задачу и закрывает модалку, если открыта
-     */
     const deleteTodoHandler = (id) => {
       store.deleteTodo(id);
       selectedTodo.value = null;
     };
 
-    /**
-     * Переход к редактированию задачи
-     */
     const editTodoHandler = (id) => {
       router.push(`/edit/${id}`);
     };
 
-    /**
-     * Смена статуса задачи
-     */
     const toggleStatusHandler = (id, newStatus) => {
       store.toggleTodoStatus(id, newStatus);
     };
 
-    /**
-     * Переход к созданию новой задачи
-     */
     const navigateToNewTodo = () => {
       router.push('/new');
     };
 
-    /**
-     * Открытие модального окна с детальной информацией
-     */
     const openDetails = (id) => {
-      const todo = todos.value.find(t => t.id === id);
+      const todo = todos.value.find((t) => t.id === id);
       selectedTodo.value = todo;
     };
 
