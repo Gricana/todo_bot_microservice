@@ -2,15 +2,14 @@
   <div class="form-field">
     <label :for="id">{{ label }}</label>
     <input
-        :type="type"
         :id="id"
+        :type="type"
         :placeholder="placeholder"
+        :inputmode="inputmode"
         :maxlength="maxlength"
         :pattern="pattern"
-        :inputmode="inputmode"
         :value="modelValue"
         @input="$emit('update:modelValue', $event.target.value)"
-        required
     />
   </div>
 </template>
@@ -19,21 +18,19 @@
 export default {
   name: 'FormField',
   props: {
-    modelValue: [String, Number],
-    label: String,
-    id: String,
-    type: {
-      type: String,
-      default: 'text'
-    },
+    label: { type: String, required: true },
+    id: { type: String, required: true },
+    type: { type: String, default: 'text' },
     placeholder: String,
+    inputmode: String,
     maxlength: Number,
     pattern: String,
-    inputmode: String
+    modelValue: String
   },
-  emits: ['update:modelValue'],
+  emits: ['update:modelValue']
 };
 </script>
+
 
 
 <style scoped>

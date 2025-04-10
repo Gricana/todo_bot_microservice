@@ -1,8 +1,12 @@
+<!-- Login.vue -->
 <template>
   <div class="login-page">
     <h1>Авторизация</h1>
+
+    <!-- Авторизационная форма с двумя полями -->
     <form @submit.prevent="onLogin">
 
+      <!-- Поле: Telegram Chat ID (должен быть ровно 9 цифр) -->
       <FormField
           label="ID tg-чата (9 цифр)"
           id="chatId"
@@ -14,6 +18,7 @@
           v-model="credentials.telegram_id"
       />
 
+      <!-- Поле: Telegram Username -->
       <FormField
           label="Ник пользователя"
           id="username"
@@ -21,6 +26,7 @@
           v-model="credentials.username"
       />
 
+      <!-- Кнопка авторизации -->
       <button type="submit">Авторизоваться через Telegram</button>
     </form>
   </div>
@@ -44,18 +50,20 @@ export default {
       username: ''
     });
 
-    // Основной метод входа
+    /**
+     * Метод логина по ID чата и username.
+     * Если ID некорректный (не 9 цифр) — не отправляем форму.
+     */
     const onLogin = async () => {
       try {
-        // Простая клиентская проверка ID
         if (!/^\d{9}$/.test(credentials.value.telegram_id)) {
           alert('ID чата должен содержать ровно 9 цифр.');
           return;
         }
 
-        await auth.register(credentials.value); // регистрация (если требуется)
-        await auth.login(credentials.value);    // логин
-        await router.push('/');                 // редирект на главную
+        await auth.register(credentials.value);
+        await auth.login(credentials.value);
+        await router.push('/');
       } catch (error) {
         console.error('Ошибка при логине:', error);
       }
@@ -68,6 +76,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 .login-page {
