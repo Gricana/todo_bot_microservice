@@ -19,7 +19,6 @@ export const useAuthStore = defineStore('auth', {
          */
         async register(credentials) {
             try {
-                console.log(credentials);
                 const res = await todoApi.post('/auth/register/', credentials);
                 this.user = res.data.username;
                 localStorage.setItem('user', res.data.username);
