@@ -1,8 +1,20 @@
 <template>
   <div class="form-group">
+    <!-- Название поля -->
     <label :for="id">{{ label }}</label>
+
+    <!-- Слот для поля ввода (input, textarea, select и т.п.) -->
     <slot />
-    <p v-if="error" class="error-message">{{ error }}</p>
+
+    <!-- Сообщение об ошибке (если передано) -->
+    <p
+        v-if="error"
+        class="error-message"
+        :aria-live="'polite'"
+        :id="`${id}-error`"
+    >
+      {{ error }}
+    </p>
   </div>
 </template>
 
@@ -10,9 +22,27 @@
 export default {
   name: 'FormGroup',
   props: {
-    id: String,
-    label: String,
-    error: String,
+    /**
+     * ID для привязки label -> input
+     */
+    id: {
+      type: String,
+      required: true,
+    },
+    /**
+     * Название поля, отображается в label
+     */
+    label: {
+      type: String,
+      required: true,
+    },
+    /**
+     * Сообщение об ошибке. Если пусто — блок не отображается.
+     */
+    error: {
+      type: String,
+      default: '',
+    },
   },
 };
 </script>
