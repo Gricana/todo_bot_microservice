@@ -54,7 +54,7 @@ class TokenObtainPairFromBotView(TokenObtainPairView):
     - Returns Access and Refresh tokens if the user exists.
     """
 
-    permission_classes = (IsAuthenticatedOrTelegramBot,)
+    permission_classes = (permissions.AllowAny,)
 
     def post(self, request, *args, **kwargs):
         username = request.data.get("username")
